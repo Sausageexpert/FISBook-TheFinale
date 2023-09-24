@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <style>
+            body{
+                background-color: antiquewhite;
+            }
+        </style>
+    </head>
+    <body>
+        <div class = 'container p-5 my-5 bg-dark text-light'>
+          <center><h1 style = "color:darkviolet"><u>REQUESTS: </u></h1></center> 
+        
+            {% for join_req in join_reqs %}
+            <form method="POST">
+                {% csrf_token %}
+                {{join_req.user}}
+                <button type = 'submit' name="accept" class = 'btn btn-primary btn-md' value={{join_req.user}}>Accept</button>
+            </form>
+            <br>
+            {% empty %}
+            <h2>Nothing Here Yet </h2>
+            
+            {% endfor %}
+        </div>
+            <div class = 'container p-5 my-5 bg-dark text-light'>
+           <center> <h1 style = "color:darkviolet"><u>MEMBERS: </u></h1> </center>
+            <br>
+            {% for member in members %}
+            <form method="POST">
+                {% csrf_token %}
+                <a href="{% url 'pages:user' member.reg_no %}"><p style = "font-size: xx-large;">{{member.first_name}}</p></a>
+                <button type = 'submit' name="remove" class = 'btn btn-danger btn-md' value={{member.reg_no}}>Remove</button>
+                {% if member in mods %}
+                    <button type = 'submit' name="removemod" class = 'btn btn-warning btn-md' value={{member.reg_no}}>Unmodify</button>
+                {% else %}
+                    <button type = 'submit' name="makemod" class = 'btn btn-success btn-md' value={{member.reg_no}}>Modify</button>
+                {% endif %}
+            </form>
+            <br>
+            {% endfor %}
+
+        </div>
+
+
+    </body>
+</html>
+

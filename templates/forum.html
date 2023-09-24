@@ -1,0 +1,192 @@
+
+
+<html>
+    <head>
+        <title>{{forum.name}}</title>
+
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+        <style>
+            body{
+                background-color: #f8e9a1
+            }
+            h3{
+                
+                font-family:'Courier New', Courier, monospace;
+                font-weight:bold;
+            }
+            .nav-link:hover{
+                text-decoration:underline
+            }
+           
+            nav{
+                background-color: #daad86
+            }
+            .carouselText{
+                color:white;
+            }
+            .card{
+                background-color:#daad86;
+                width:300px;
+                margin:10%;
+            }
+            
+            li{
+                border-radius:10px;
+            }
+        
+ 
+              .cardRow {
+                
+                overflow-x: scroll;
+                white-space: nowrap;
+                display:flex;
+                max-width: 80%;
+                background-color: #daad86;
+
+                }
+
+                .cardRow a {
+                display: inline-block;
+                color: white;
+                text-align: center;
+                padding: 14px;
+                text-decoration: none;
+                }
+
+                .chatBtn{
+                    width: 150px;
+                    background-color:aqua;
+                    border-radius: 20px;
+                    height:60px;
+                }
+
+                
+              
+             
+              
+        </style>
+
+    </head>
+    <body>
+
+        <nav class = 'navbar navbar-expand-lg'>
+            <ul class = 'navbar-nav mr-auto'>
+                
+                <h2>Navigate: </h4> &nbsp &nbsp&nbsp &nbsp&nbsp &nbsp&nbsp &nbsp
+                <h4><li><a class = 'nav-link' href = "{% url 'pages:home' %}">Homepage</a></h4>
+                    <h4><li><a class = 'nav-link' href = "{% url 'pages:user' request.user %}">Profile</a></h4>
+                        <h4><li><a class = 'nav-link' href = "{% url 'pages:explore' %}">Explore</a></h4>
+                <h4><li><a class = 'nav-link' href="{% url 'users:logout' %}">Log out</a></li></h4>
+            </ul>
+        </nav>
+       
+
+        
+        
+        <div class = 'container p-5 my-3 bg-dark text-light'>
+            <h1><center> {{forum.name}} </center></h1>
+        </div>
+        <div class = 'container p-5 my-2 bg-secondary text-dark'>
+            <h3>{{forum.about}}</h3>
+            
+        <form method = 'POST' type = 'hidden' id = 'postForm'>
+            {% csrf_token %}
+            <input type = 'hidden' id = 'roomName' value = {{forum.name}}>
+            <input type = 'hidden' id= 'id' value = {{forum.id}}>
+            <button type = 'submit' class = 'chatBtn' name = "chat">Chat</button>
+        </form>      
+        
+        {% if request.user in mods %}
+            <a class = 'btn btn-success btn-lg' href="{% url 'forums:member_list' forum.id %}">See members</a>
+        {% endif %}
+            
+            
+        </div>
+        
+        <br>
+        <div class = 'container my-4 p-4 bg-dark text-light'>
+            <h2>Events</h2>
+        </div>
+      <center>  <div class = 'cardRow'>
+            {% for event in events %}
+            <div class = 'col'>
+              <div class = 'card w-5 mb-3'>
+                <div class = 'card-header bg-dark text-light'>
+                  {{event.date}}
+                </div>
+                <div class = 'card-body bg-secondary text-light'>
+                  <div class = 'card-title'>
+                    <h2> {{event.title}} </h2>
+                  </div>
+                  <div class = 'container p-3 my-2 bg-dark text-light'><h5>{{event.about}}</h5></div>
+          
+                  
+                  <br>
+                  <center><a class = 'btn btn-dark' href = "{% url 'forums:event' event.id %}">Go To Event</a></center>
+                </div>
+              </div>
+            </div>
+            {% empty %}
+            <h3>Nothing Here Yet</h3>
+          {% endfor %}
+        </div></center>
+
+        {% if request.user in mods %}
+        <div class = 'container my-4 p-4 bg-dark text-light'>
+            <h1>Schedule an Event</h1> <br>
+            <p>*Enter date in yyyy-mm-dd format <br> Hold shift and drag to select consecutive choices <br> Hold control and click to select non-consecutive choices</p>
+            <form method = 'POST'>
+                {% csrf_token %}
+                <h3>Forum</h3> 
+                <div id = "forumList"> {{form.forum}}<br></div>
+                <h3>Title</h3>
+                {{form.title}}<br>
+                <h3>About</h3>
+                {{form.about}}<br>
+                <h3>Date</h3>
+                {{form.date}}<br>
+                <h3>Is Public</h3>
+                {{form.is_public}}<br>
+                
+                <br><br>
+                
+                <button type = 'submit' class = 'btn btn-primary btn-lg'> Schedule </button>
+            </form>
+        </div>
+
+        <div class = 'container my-4 p-4 bg-dark text-light'>
+            <h1>Create a Notice</h1>
+            <br>
+            <form method="POST">
+                {% csrf_token %}
+                <h3>Forum</h3>
+                <div id="noticeList">{{noticeform.forum}}<br></div>
+                <h3>Title</h3>
+                {{noticeform.title}}<br>
+                <h3>About</h3>
+                {{noticeform.about}}<br>
+                <br><br>
+                
+                <button type = 'submit' name = 'notice' class = 'btn btn-primary btn-lg'> Make notice </button>
+            </form>
+        </div>
+
+        {% endif %}
+
+        <div class = 'container my-4 p-4 bg-dark text-light'>
+            <h1>Notices</h1>
+            <br><br>
+        
+        {% for notice in notices %}
+            <h2 style = "color:darkcyan">{{notice.title}}</h2> <br>
+        {% empty %}
+            <h3>Nothing here yet</h3>
+        {% endfor %}
+    </div>
+    </body>
+
+</html>
+
+

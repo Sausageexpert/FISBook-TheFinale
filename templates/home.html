@@ -1,0 +1,67 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block content %}
+
+<div class = 'container p-5 my-3 bg-dark text-light'>
+<h1><center>Homepage</center></h1>
+</div>
+
+
+    <div id="carouselExample" class="carousel slide">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img src="/media/forumPic.jpeg" class="d-block w-100" alt="..." height='500'>
+          
+        </div>
+        {% for forum in forums %}
+        <div class="carousel-item">
+          <a href="{% url 'forums:forum' forum.id %}"><img src='{{ forum.pic.url }}' class="d-block w-100" alt="..." height='500'></a>
+          <div class = 'carousel-caption bg-dark text-light'>
+            <h2 class = 'carouselText'>{{forum.name}}</h2>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+
+
+<br>
+<div class = 'cardContainer'>
+<div class = 'container my-4 p-4 bg-dark text-light'>
+<h2>Events You're In </h2>
+</div>
+<div class = 'container p-5 my-5 bg-dark text-light'>
+{% for event in users_events %}
+  <h2 style = "color:darkviolet"><b><u>{{event.title}}</u></b></h2>
+  <h3>{{event.date}}</h3>
+  <br>
+  <i><p style = "font-size: large;">{{event.about}}</p></i>
+  <a class = 'btn btn-primary btn-lg' href = "{% url 'forums:event' event.id %}">Go To Event</a>
+  <br><br><br><br>
+{% endfor %}
+</div>
+</div>
+<br>
+<div class = 'container my-4 p-4 bg-dark text-light'>
+  <h2>Other Upcoming Events</h2>
+  </div>
+  <div class = 'container p-5 my-5 bg-dark text-light'>
+    {% for event in events %}
+    {% if event not in users_events %}
+    <h2 style = "color:darkviolet">{{event.title}}</h2>  <i><h5>{{event.date}}</h5></i> <br>
+        <a class = 'btn btn-primary btn-lg' href="{% url 'forums:event' event.id %}">Go To Event</a> <br> <br>
+    {% endif %}
+    {% endfor %}
+  </div>
+
+
+{% endblock content %}

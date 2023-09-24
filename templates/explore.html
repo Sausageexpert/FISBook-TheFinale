@@ -1,0 +1,67 @@
+
+{% extends '_base.html' %}
+
+<html>
+    <head>
+        <title>Explore</title>
+        
+    </head>
+    <body>
+        {% block content %}
+        
+<br><br>
+        <input class = "searchBar" style = "width:50%; height:7%; font-size:xx-large" placeholder = 'Search For Forums'> <br>
+        <div id = 'results' class = 'container p-5 my-5 bg-dark text-light'>
+            
+          <h1>Results:</h1><br>
+        </div>
+      
+
+        <br>
+
+        <div class = 'container p-5 my-5 bg-dark text-light'>
+            <h1>Public Events:</h1> <br>
+            {% for event in events %}
+            <h2 style = "color:darkviolet">{{event.title}}</h2><br>
+                <a class = 'btn btn-primary btn-lg' href="{% url 'forums:event' event.id %}">Go To Event</a><br><br>
+            {% endfor %}
+        </div>
+
+
+
+        <script>
+          function getForums() {
+            var forum = $(".searchBar").val();
+            console.log(forum)
+            
+            $.ajax({
+                type: 'GET',
+                url: '/explore/get/' + forum,
+                success: function(response) {
+                    var forums = response.forums;
+                    console.log(forums)
+                    var resultContainer = $("#results");
+                    resultContainer.empty();
+        
+                    for (let i = 0; i < forums.length; i++) {
+                        var forum = forums[i];
+                        var forumHtml = '<h3>'+forum.name+'</h3>'
+                        resultContainer.append(forumHtml)
+                        var buttonElement = $('<button/>', {
+                          text:'Go To Forum',
+                          class:'btn btn-lg btn-success',
+                          click: function(){
+                            window.location.href = '/forums/'+forum.id
+                          }
+                        })
+                        resultContainer.append(buttonElement)
+                    }
+                }
+            });
+        }
+
+        setInterval(getForums, 2000)
+        </script>
+        {% endblock %}
+    </body>
+</html>
