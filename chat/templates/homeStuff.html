@@ -1,0 +1,15 @@
+
+<html>
+    <head>
+        <title>Home</title>
+    </head>
+    
+    <form id="post-form" method='POST' action='{% url "checkForRoom" %}'>
+        {% csrf_token %}
+        <label>Room Name</label>
+        <input type="text" name="roomName" id="room_name" width="100px">
+        <label>Username</label>
+        <input type="text" name="user" id="user" width="100px">
+        <input type="submit" value="enter">
+    </form>
+</html>

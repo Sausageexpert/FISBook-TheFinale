@@ -1,0 +1,94 @@
+<html>
+    <head>
+        <title>{{room}}</title>
+        <style>
+           
+            
+            .scrollable-container{
+                max-height:300px;
+                overflow-y:auto;
+            }
+            .nav-link:hover{
+                text-decoration:underline
+            }
+            
+            nav{
+                background-color: #daad86
+            }
+            
+        </style>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    </head>
+    <body>
+        <nav class = 'navbar navbar-expand-lg'>
+            <ul class = 'navbar-nav mr-auto'>
+                <h2>Navigate: </h4> &nbsp &nbsp&nbsp &nbsp&nbsp &nbsp&nbsp &nbsp
+                <h4><li><a class = 'nav-link' href = "{% url 'pages:home' %}">Homepage</a></h4>
+                    <h4><li><a class = 'nav-link' href = "{% url 'pages:user' request.user %}">Profile</a></h4>
+                        <h4><li><a class = 'nav-link' href = "{% url 'pages:explore' %}">Explore</a></h4>
+                <h4><li><a class = 'nav-link' href="{% url 'users:logout' %}">Log out</a></li></h4>
+            </ul>
+        </nav>
+        <div class = 'container-fluid p-5 my-3 bg-dark text-light'>
+           <h1><center> {{room}} </h1></center>
+        </div>
+        <div class = 'scrollable-container p-5 my-1 bg-dark text-light' id = 'messagesContainer'>
+            {%for object in msgs %}
+            <h3> <b>{{object.user}}:</b> {{object.value}}</h3>  <p>{{object.date}}</p>
+            {% endfor %}
+        </div>
+        <br>
+        <br>
+        <form method='POST' id='postForm'>
+            {% csrf_token %}
+            <div class = 'form-group'>
+                <input placeholder = 'message' class = 'form-control bg-light p-3' id='msg'/>
+                <br>
+                <button type = 'submit' class = 'btn btn-primary btn-lg pt-2' id='submitButton'>Send</button>
+            </div>
+        </form>
+        <input id = 'name' type='hidden' value={{user}}>
+        <input id = 'room' type='hidden' value={{room}}>
+    </body>
+    <script>
+        $(document).on('submit', '#postForm', function(e){
+            e.preventDefault()
+            var csrf='{{csrf_token}}'
+            $.ajax({
+                type:'POST',
+                url:'/chat/send',
+                data:{
+                    user:$("#name").val(),
+                    value:$("#msg").val(),
+                    room:$("#room").val(),
+                    csrfmiddlewaretoken:csrf
+                }
+            })
+            $("#msg").val('');
+        })
+
+        function getMsgs() {
+            var room = $("#room").val();
+            
+            $.ajax({
+                type: 'GET',
+                url: '/chat/get/' + room,
+                success: function(response) {
+                    var messages = response.messages;
+                    var messagesContainer = $("#messagesContainer");
+                    messagesContainer.empty();  // Clear the existing messages
+        
+                    for (let i = 0; i < messages.length; i++) {
+                        var message = messages[i];
+                        var messageHtml = '<h3><b>' + message.user + ':</b> ' + message.value + '</h3> <p>' + message.date + '</p>';
+                        messagesContainer.append(messageHtml);
+                    }
+                }
+            });
+        }
+
+        setInterval(getMsgs, 2500)
+    </script>
+</html>
